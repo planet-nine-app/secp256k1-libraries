@@ -68,7 +68,7 @@ module.exports = function(message, privateKey) {
 };
 ```
 
-Here we take a hash of the message, then sign it with our private key and return the hexadecimal representation of the result. Not all languages have a suitable sha3 implementation, so the Planet Nine platform also accepts sha256 hashed messages. Check the individual language implementations for which hashing algorithm they use. 
+Here we take a hash of the message (the signed data must be 32 bytes), then sign it with our private key and return the hexadecimal representation of the result. Not all languages have a suitable sha3 implementation, so the Planet Nine platform also accepts sha256 hashed messages. Check the individual language implementations for which hashing algorithm they use. 
 
 ### Storing Keys
 
