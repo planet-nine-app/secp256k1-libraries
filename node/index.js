@@ -1,2 +1,2 @@
-const crypto = require('crypto');
+const pncrypto = require('./pn-crypto');
 
