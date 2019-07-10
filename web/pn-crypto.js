@@ -5670,9 +5670,9 @@ function config (name) {
 const secp256k1 = require('secp256k1');
 const sha3 = require('js-sha3');
 
-var keyGenerator = {};
+window.PNCrypto = {};
 
-keyGenerator.generateKeys = function(phrase) {
+PNCrypto.generateKeys = function(phrase) {
   var phraseHash = sha3.sha3_256.create();
   phraseHash.update(phrase);
 console.log(phraseHash.hex());
@@ -5688,9 +5688,6 @@ console.log(phraseHash.hex());
   };
 };
 
-//window.keyGenerator = keyGenerator;
-window.generateKeys = keyGenerator.generateKeys;
-
 function signMessageWithPrivateKey(message, privateKey) {
   var hashedMessage = sha3.sha3_256.create();
   hashedMessage.update(message);
@@ -5703,15 +5700,15 @@ console.log(hashedMessage.hex());
   return signedObject.signature.toString('hex');
 };
 
-window.signMessage = function(message) {
-  let keys = window.getKeys();
+PNCrypto.signMessage = function(message) {
+  let keys = PNCrypto.getKeys();
   if(keys && keys.privateKey) {
     return signMessageWithPrivateKey(message, keys.privateKey);
   }
   return new Error('Could not find privateKey');
 };
 
-window.getKeys = function() {
+PNCrypto.getKeys = function() {
   console.warn('You need to overwrite the getKeys function to get the right keys');
   return null;
 };
