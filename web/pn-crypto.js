@@ -5675,7 +5675,13 @@ window.PNCrypto = {};
 PNCrypto.generateKeys = function(phrase) {
   var phraseHash = sha3.sha3_256.create();
   phraseHash.update(phrase);
-console.log(phraseHash.hex());
+  var lastHash = phraseHash;
+  for(i = 0; i < 250000; i++) {
+    var hash = sha3.sha3_256.create();
+    hash.update(lastHash.hex());
+    lastHash = hash;
+    phraseHash = hash;
+  }
   var phraseHashBinary = new Buffer(phraseHash.hex(), 'hex');
 
   let privateKey = phraseHashBinary;
