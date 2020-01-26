@@ -4,6 +4,7 @@ const sha3 = require('js-sha3');
 module.exports = function(message, privateKey) {
   var messageHash = sha3.sha3_256.create();
   messageHash.update(message);
+console.log(messageHash.hex());
   var messageHashBinary = new Buffer(messageHash.hex(), 'hex');
   var privateKeyBuffer = new Buffer(privateKey, 'hex');
 
