@@ -16,9 +16,10 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         
         
-        verifySignature()
+        //verifySignature()
         //signMessage(message: "'{\"userId\":1,\"direction\":\"north\",\"ordinal\":1\"}'")
         signMessage(message: "foo")
+        //generateKeys(seedPhrase: "foo bar")
         
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -131,7 +132,7 @@ class ViewController: UIViewController {
             guard serialized.withUnsafeMutableBytes({secp256k1_ecdsa_signature_serialize_compact(ctx, $0, &sig) }) == 1 else { return }
             serialized.count = 64
             print(serialized.count)
-            print(serialized.toHexString())
+            print("serialized \(serialized.toHexString())")
             
             var length: size_t = 128
             //var der = [UInt8].init(reserveCapacity: length)
@@ -153,12 +154,41 @@ class ViewController: UIViewController {
         }
     }
     
+    func generateKeys(seedPhrase: String) {
+        var msgArray: [UInt8] = Array(seedPhrase.utf8)
+        
+        //var msg32: [UInt8]
+        for _ in 0..<1 {
+            var msgSHA = SHA3.init(variant: .sha256)
+            do {
+              msgArray = try msgSHA.finish(withBytes: msgArray)
+            } catch {
+                print(error)
+                return
+            }
+        }
+        
+        
+        if let ctx = secp256k1_context_create(UInt32(SECP256K1_CONTEXT_SIGN)) {
+            var publicKey = secp256k1_pubkey()
+            let pubKeyRes = secp256k1_ec_pubkey_create(ctx, &publicKey, &msgArray)
+            
+            var length: size_t = 33
+            //var der = [UInt8].init(reserveCapacity: length)
+            var serialized = Data(count: length)
+            guard serialized.withUnsafeMutableBytes({ secp256k1_ec_pubkey_serialize(ctx, $0, &length, &publicKey,  UInt32(SECP256K1_EC_COMPRESSED)) }) == 1 else { return }
+            
+            print("private key \(msgArray.toHexString())")
+            print("publicKey: \(serialized.toHexString())")
+        }
+    }
+    
     func stringForSignature<T>(collection: T) -> String {
         var signature = ""
         let mirror = Mirror(reflecting: collection)
         let tupleElements = mirror.children.map({ $0.value })
         tupleElements.forEach { element in
-            signature = signature + String(format: "%02X", element as! UInt8)
+            signature = signature + String(format: "%02x", element as! UInt8)
         }
         
         return signature
